@@ -1,35 +1,87 @@
-This is a Kotlin Multiplatform project targeting Android, iOS.
+# 🧩 CommonConfig – BuildConfigField for Kotlin Multiplatform
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-    folder is the appropriate location.
+`CommonConfig` is a lightweight **Gradle plugin** that helps you define and generate type-safe configuration constants (similar to `BuildConfig` in Android) for **Kotlin Multiplatform projects**.
 
-* [/iosApp](./iosApp/iosApp) contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
-
-### Build and Run Android Application
-
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
-
-### Build and Run iOS Application
-
-To build and run the development version of the iOS app, use the run configuration from the run widget
-in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and run it from there.
+It automatically generates a Kotlin object (e.g. `Config`) inside your `commonMain` source set, so you can easily access constants from shared code.
 
 ---
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+## 🚀 Installation
+
+Add the plugin to your project’s `build.gradle.kts` (or `build.gradle`):
+
+```kotlin
+plugins {
+    ...
+    id("org.jetbrains.kotlin.multiplatform") version "<your-kotlin-version>"
+    id("io.github.emadmahouti.kmp.commonConfig") version "<latest-version>"
+}
+```
+
+---
+
+## ⚙️ Configuration Example
+
+In your **KMP module’s `build.gradle.kts`** (e.g. `composeApp/build.gradle.kts`):
+
+```kotlin
+commonConfig {
+    packageName("org.emadmahouti.commonConfig")
+    buildConfigField("String", "token", "\"Hello World\"")
+    // You can add more fields:
+    // buildConfigField("Int", "maxCount", "5")
+    // buildConfigField("Boolean", "isDebug", "true")
+}
+```
+
+This will generate a Kotlin file automatically at build time:
+
+```
+composeApp/build/generated/kotlin/commonMain/{packageName}/Config.kt
+```
+
+---
+
+## 🧱 Generated Code Example
+
+```kotlin
+package org.emadmahouti.commonConfig
+
+object Config {
+    const val token: String = "Hello World"
+}
+```
+
+---
+
+## 🧑‍💻 Usage in `commonMain`
+
+Once generated, you can simply use it anywhere in your shared code:
+
+```kotlin
+import org.emadmahouti.commonConfig.Config
+
+fun printToken() {
+    println(Config.token)
+}
+```
+
+---
+
+## ⚠️ Notes
+
+- The plugin is designed for **Kotlin Multiplatform** projects using `org.jetbrains.kotlin.multiplatform`.
+- Fields must be declared with valid Kotlin types:  
+  `"String"`, `"Int"`, `"Boolean"`, `"Long"`, `"Float"`, `"Double"`, or any custom class.
+- The value string should include quotes if it’s a string literal (e.g. `"\"Hello\""`).
+
+---
+
+## 🧰 Available DSL Functions
+
+| Function | Description | Example |
+|-----------|--------------|----------|
+| `packageName(name: String)` | Sets the target package for the generated file. | `packageName("org.example.config")` |
+| `buildConfigField(type: String, key: String, value: String)` | Adds a constant to the generated `Config` object. | `buildConfigField("Int", "maxItems", "10")` |
+
+

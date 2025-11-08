@@ -18,10 +18,12 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 import commonconfig.composeapp.generated.resources.Res
 import commonconfig.composeapp.generated.resources.compose_multiplatform
+import org.emadmahouti.commonConfig.Config
 
 @Composable
 @Preview
 fun App() {
+    Config.token
     MaterialTheme {
         var showContent by remember { mutableStateOf(false) }
         Column(
