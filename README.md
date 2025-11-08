@@ -26,7 +26,7 @@ In your **KMP module’s `build.gradle.kts`** (e.g. `composeApp/build.gradle.kts
 
 ```kotlin
 commonConfig {
-    packageName("org.emadmahouti.commonConfig")
+    packageName("org.example.application")
     buildConfigField("String", "token", "\"Hello World\"")
     // You can add more fields:
     // buildConfigField("Int", "maxCount", "5")
@@ -45,7 +45,7 @@ composeApp/build/generated/kotlin/commonMain/{packageName}/Config.kt
 ## 🧱 Generated Code Example
 
 ```kotlin
-package org.emadmahouti.commonConfig
+package org.example.application
 
 object Config {
     const val token: String = "Hello World"
@@ -59,7 +59,7 @@ object Config {
 Once generated, you can simply use it anywhere in your shared code:
 
 ```kotlin
-import org.emadmahouti.commonConfig.Config
+import org.example.application.Config
 
 fun printToken() {
     println(Config.token)
@@ -72,7 +72,7 @@ fun printToken() {
 
 - The plugin is designed for **Kotlin Multiplatform** projects using `org.jetbrains.kotlin.multiplatform`.
 - Fields must be declared with valid Kotlin types:  
-  `"String"`, `"Int"`, `"Boolean"`, `"Long"`, `"Float"`, `"Double"`, or any custom class.
+  `"String"`, `"Int"`, `"Boolean"`, `"Long"`, `"Float"`, `"Double"`
 - The value string should include quotes if it’s a string literal (e.g. `"\"Hello\""`).
 
 ---
