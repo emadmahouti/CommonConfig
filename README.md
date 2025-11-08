@@ -12,7 +12,7 @@ Add the plugin to your project’s `build.gradle.kts` (or `build.gradle`):
 
 ```kotlin
 plugins {
-    ...
+    //...
     id("org.jetbrains.kotlin.multiplatform") version "<your-kotlin-version>"
     id("io.github.emadmahouti.kmp.commonConfig") version "<latest-version>"
 }
@@ -25,13 +25,18 @@ plugins {
 In your **KMP module’s `build.gradle.kts`** (e.g. `composeApp/build.gradle.kts`):
 
 ```kotlin
-commonConfig {
-    packageName("org.example.application")
-    buildConfigField("String", "token", "\"Hello World\"")
-    // You can add more fields:
-    // buildConfigField("Int", "maxCount", "5")
-    // buildConfigField("Boolean", "isDebug", "true")
+kotlin {
+    //..
+    commonConfig {
+        packageName("org.example.application")
+        buildConfigField("String", "token", "\"Hello World\"")
+        // You can add more fields:
+        // buildConfigField("Int", "maxCount", "5")
+        // buildConfigField("Boolean", "isDebug", "true")
+    }
+    //...
 }
+
 ```
 
 This will generate a Kotlin file automatically at build time:
