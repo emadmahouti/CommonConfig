@@ -12,9 +12,7 @@ Add the plugin to your project’s `build.gradle.kts` (or `build.gradle`):
 
 ```kotlin
 plugins {
-    //...
-    id("org.jetbrains.kotlin.multiplatform") version "<your-kotlin-version>"
-    id("io.github.emadmahouti.kmp.commonConfig") version "<latest-version>"
+  id("io.github.emadmahouti.kmp.commonConfig") version "1.0.0"
 }
 ```
 
