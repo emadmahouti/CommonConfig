@@ -13,14 +13,24 @@ plugins {
 kotlin {
     commonConfig {
         packageName("org.emadmahouti.commonConfig")
-        buildConfigField("String", "token", "\"Hello World\"")
+        buildConfigField("String", "token")
+        platform {
+            getByName("iosSimulatorArm64") {
+                buildConfigField("String", "token", "\"Hello IOS\"")
+            }
+            getByName("android") {
+                buildConfigField("String", "token", "\"Hello Android\"")
+            }
+        }
+
+        print()
     }
     androidTarget {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -30,7 +40,8 @@ kotlin {
             isStatic = true
         }
     }
-    
+
+
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)

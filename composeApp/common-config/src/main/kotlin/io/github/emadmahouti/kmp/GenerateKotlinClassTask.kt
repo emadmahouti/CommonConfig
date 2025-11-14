@@ -14,6 +14,8 @@ import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import io.github.emadmahouti.kmp.dsl.BuildField
 import io.github.emadmahouti.kmp.dsl.Config
+import io.github.emadmahouti.kmp.dsl.Property
+import io.github.emadmahouti.kmp.dsl.SourceSet
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
@@ -21,32 +23,41 @@ import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import java.io.File
+import javax.lang.model.element.Modifier
 
 abstract class GenerateKotlinClassTask: DefaultTask() {
 
 
     @get:Internal
-    var properties: List<BuildField> = emptyList()
+    internal lateinit var source: SourceSet
 
-    @Input
-    lateinit var packageName: String
+    @get: Input
+    internal lateinit var packageName: String
 
-    @OutputDirectory
-    lateinit var outputDir: File
+    @get: OutputDirectory
+    internal lateinit var outputDir: File
 
     @TaskAction
     fun generate() {
         if (!outputDir.exists()) outputDir.mkdirs()
+        val properties = source.properties
 
         val groupedByPackage = properties.groupBy { packageName }
         groupedByPackage.forEach { (pkg, props) ->
-            val typeSpec = TypeSpec.objectBuilder("Config")
+            val typeSpec = TypeSpec
+                .objectBuilder("Config")
+                .addModifiers(mapModifier(source.modifier))
                 .apply {
                     props.forEach { prop ->
                         addProperty(
-                            PropertySpec.builder(prop.key, mapType(prop.type))
-                                .initializer(prop.value)
-                                .addModifiers(KModifier.CONST)
+                            PropertySpec.builder(prop.field.key, mapType(prop.field.type))
+                                .also {
+                                    if(
+                                        source.modifier !== io.github.emadmahouti.kmp.dsl.Modifier.EXPECT&&
+                                        prop.modifier !== io.github.emadmahouti.kmp.dsl.Modifier.EXPECT )
+                                        it.initializer(prop.field.value)
+                                }
+                                .addModifiers(mapModifier(prop.modifier))
                                 .build()
                         )
                     }
@@ -77,6 +88,14 @@ abstract class GenerateKotlinClassTask: DefaultTask() {
 //
 //        fileSpec
 //            .writeTo(outputDir)
+    }
+
+    private fun mapModifier(modifier: io.github.emadmahouti.kmp.dsl.Modifier): KModifier {
+        return when(modifier) {
+            io.github.emadmahouti.kmp.dsl.Modifier.EXPECT -> KModifier.EXPECT
+            io.github.emadmahouti.kmp.dsl.Modifier.ACTUAL -> KModifier.ACTUAL
+            io.github.emadmahouti.kmp.dsl.Modifier.NONE -> KModifier.CONST
+        }
     }
 
 

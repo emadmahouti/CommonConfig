@@ -11,6 +11,25 @@ fun String.toSnakeCase(): String {
         .uppercase()
 }
 
+inline fun <T> MutableList<T>.updateFirst(
+    predicate: (T) -> Boolean,
+    transform: (T) -> T,
+    initializer: ()  -> T
+) {
+    val index = indexOfFirst(predicate)
+    if (index != -1) {
+        this[index] = transform(this[index])
+    } else {
+        this.add(initializer.invoke())
+    }
+}
+
+inline fun <T> MutableList<T>.updateEach(transform: (T) -> T) {
+    for (i in indices) {
+        this[i] = transform(this[i])
+    }
+}
+
 fun Project.localProperty(): LocalProp {
     return LocalProp( this.rootProject.file("local.properties"))
 }
